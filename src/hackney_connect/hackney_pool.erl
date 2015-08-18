@@ -301,6 +301,9 @@ handle_cast({set_maxconn, MaxConn}, State) ->
     {noreply, State#state{max_connections=MaxConn}};
 handle_cast({set_timeout, NewTimeout}, State) ->
     {noreply, State#state{timeout=NewTimeout}};
+handle_cast(stat, State) ->
+    error_logger:info_msg("~p~n", [State]),
+    {noreply, State};
 
 handle_cast(_Msg, State) ->
     {noreply, State}.
@@ -339,9 +342,6 @@ handle_info({'DOWN', Ref, request, _Pid, _Reason}, State) ->
         error ->
             {noreply, State}
     end;
-handle_info(stat, State) ->
-    error_logger:info_msg("~p~n", [State]),
-    {noreply, State};
 handle_info(_, State) ->
     {noreply, State}.
 
