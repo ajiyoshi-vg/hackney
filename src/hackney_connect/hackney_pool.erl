@@ -295,7 +295,9 @@ handle_call({count, Key}, _From, #state{connections=Conns}=State) ->
         error ->
             0
     end,
-    {reply, Size, State}.
+    {reply, Size, State};
+handle_call(debug_get_state, _From, State) ->
+    {reply, State, State}.
 
 handle_cast({set_maxconn, MaxConn}, State) ->
     {noreply, State#state{max_connections=MaxConn}};
