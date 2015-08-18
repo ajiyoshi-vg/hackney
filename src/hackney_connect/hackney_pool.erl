@@ -279,8 +279,10 @@ handle_call({checkin, Ref, Dest, Socket, Transport}, From, State) ->
                  {ok, {_Adress, _Port}} ->
                      %% socket is not closed, try to deliver it or store it
                      deliver_socket(Socket, Dest, State#state{clients=Clients2});
-                 _Error ->
+                 Error ->
                      %% socket is probably closed just return
+                     catch Transport:close(Socket),
+                     error_logger:error_msg("socket(~p) is probably closed(~p)~n", [Socket, Error]),
                      State#state{clients=Clients2}
              end,
     update_usage(State2),
@@ -337,6 +339,9 @@ handle_info({'DOWN', Ref, request, _Pid, _Reason}, State) ->
         error ->
             {noreply, State}
     end;
+handle_info(stat, State) ->
+    error_logger:info_msg("~p~n", [State]),
+    {noreply, State};
 handle_info(_, State) ->
     {noreply, State}.
 
